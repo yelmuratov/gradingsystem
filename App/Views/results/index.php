@@ -47,14 +47,7 @@
         </div>
     </nav>
     <div class="container">
-    <a class="btn btn-primary mt-4" href="/student_create">Create</a>
-    <h1>Students</h1>
-    <?php
-        if(isset($_SESSION['student_create'])){
-            echo "<div class='alert alert-success'>".$_SESSION['student_create']."</div>";
-            unset($_SESSION['student_create']);
-        }
-    ?>
+    <h1>Results</h1>
     <table class="table">
       <thead>
         <tr>
