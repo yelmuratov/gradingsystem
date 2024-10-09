@@ -42,21 +42,35 @@ class CategoryController{
         $subject_id = $_POST['subject_id'];
         $score = $_POST['score']; 
         
-        $student = Student::find($_GET['id']);
+        // check student is not taking exam second time
+        $student = Student::find($student_id);
+        $subject = Subject::find($subject_id);
+        $studentCheck = Exam::where('student_id',$student_id);
+        $subjectCheck = Exam::where('subject_id',$subject_id);
 
-        $data = [
-            'student_id' => $student_id,
-            'subject_id' => $subject_id,
-            'score' => $score,
-        ];
-
-        try{
-            Exam::create($data);
-            $_SESSION['exam_create'] = 'Exam created successfully';
+        if($studentCheck && $subjectCheck){
+            ?>
+            <script>
+                alert('Student is already taking this exam');
+            </script>
+            <?php
             header('Location: /exams');
             exit();
-        }catch(\Exception $e){
-            echo $e->getMessage();
+        }else{
+            $data = [
+                'student_id' => $student_id,
+                'subject_id' => $subject_id,
+                'score' => $score,
+            ];
+    
+            try{
+                Exam::create($data);
+                $_SESSION['exam_create'] = 'Exam created successfully';
+                header('Location: /exams');
+                exit();
+            }catch(\Exception $e){
+                echo $e->getMessage();
+            }
         }
     }
 

@@ -1,19 +1,17 @@
 <?php
-    use App\Models\student\Student;
-    $limit = 10; // Number of records per page
-    $selectedPage = 1; // Default page is 1
+    use App\Database\DB;
 
-    // Get the selected page number from the URL if available
-    if (isset($_GET['page'])) {
-        $selectedPage = (int)$_GET['page'];
+    try{
+        $db = new Db();
+        $conn = $db->connect();
+        $query = 'SELECT s.name AS student_name, COUNT(e.id) AS exams_number, AVG(e.score) AS average_score FROM students s JOIN exams e ON s.id = e.student_id GROUP BY s.name;';
+        $stmt = $conn->prepare($query);
+        $stmt->execute();
+        $students = $stmt->fetchAll();
+
+    }catch(PDOException $e){
+        echo "Error: " . $e->getMessage();
     }
-
-    // Fetch the total count of students and calculate the total number of pages
-    $totalStudents = Student::count();
-    $totalPages = ceil($totalStudents / $limit);
-
-    // Fetch students for the current page using paginate
-    $students = Student::paginate($selectedPage, $limit);
 ?>
 
 <!DOCTYPE html>
@@ -60,50 +58,21 @@
     <table class="table">
       <thead>
         <tr>
-          <th scope="col">ID</th>
           <th scope="col">NAME</th>
-          <th scope="col">SURNAME</th>
-          <th scope="col">MAJOR</th>
-          <th scope="col">ACTION</th>
+          <th scope="col">THE NUMBER OF EXAMS</th>
+          <th scope="col">AVERAGE SCORE</th>
         </tr>
       </thead>
       <tbody>
         <?php foreach ($students as $student) : ?>
             <tr>
-                <th scope="row"><?= $student['id'] ?></th>
-                <td><?= $student['name'] ?></td>
-                <td><?= $student['surname'] ?></td>
-                <td><?= $student['major'] ?></td>
-                <td>
-                    <a href="/edit_st?id=<?= $student['id'] ?>" class="btn btn-warning">Edit</a>
-                    <a href="/delete_st?id=<?= $student['id'] ?>" class="btn btn-danger">Delete</a>
-                </td>
+                <td><?= $student['student_name'] ?></td>
+                <td><?= $student['exams_number'] ?></td>
+                <td><?= $student['average_score'] ?></td>
             </tr>
         <?php endforeach; ?>
       </tbody>
     </table>
-
-    <!-- Pagination -->
-    <nav aria-label="Page navigation example">
-      <ul class="pagination">
-        <!-- Previous Button -->
-        <li class="page-item <?= $selectedPage == 1 ? 'disabled' : '' ?>">
-          <a class="page-link" href="?page=<?= $selectedPage - 1 ?>">Previous</a>
-        </li>
-
-        <!-- Page Numbers -->
-        <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
-          <li class="page-item <?= $i == $selectedPage ? 'active' : '' ?>">
-            <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
-          </li>
-        <?php endfor; ?>
-
-        <!-- Next Button -->
-        <li class="page-item <?= $selectedPage == $totalPages ? 'disabled' : '' ?>">
-          <a class="page-link" href="?page=<?= $selectedPage + 1 ?>">Next</a>
-        </li>
-      </ul>
-    </nav>
     </div>
 </body>
 </html>

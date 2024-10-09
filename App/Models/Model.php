@@ -60,5 +60,12 @@
             $query = $db->query($sql);
             return $query->fetchAll(PDO::FETCH_ASSOC);
         }
+
+        public static function where($column, $value){
+            $db = self::connect();
+            $query = $db->prepare("SELECT * FROM " . static::$table . " WHERE " . $column . " = :value");
+            $query->execute(['value' => $value]);
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
     }
 ?>
