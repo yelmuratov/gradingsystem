@@ -41,6 +41,7 @@ $subjects = Subject::getAll();
         </div>
     </nav>
 <div class="container mt-5">
+    <h1>Exam create</h1>
     <form action="/create_ex" method="POST">
         <div class="mb-3">
             <label for="studentSelect" class="form-label">Select Student</label>
